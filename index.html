@@ -28,7 +28,7 @@
             align-items: flex-start;
             min-height: 100vh;
             padding: 20px;
-            color: var(--text-color); /* Testo di base bianco */
+            color: var(--text-color);
         }
 
         .metronome-card {
@@ -51,18 +51,22 @@
 
         .control-label {
             font-size: 0.875rem; /* text-sm */
-            /* Rimosso font-semibold per rendere il nome dell'input non in grassetto */
             font-weight: 500; /* font-medium */
-            color: var(--text-color); /* Etichette chiare */
+            color: var(--text-color);
+            margin-bottom: 4px; /* Spazio tra label e input */
         }
 
-        input[type="number"] {
-            appearance: textfield;
+        /* Stili per input numerici e select */
+        input[type="number"], select {
+            appearance: none;
             -moz-appearance: textfield;
             background-color: var(--input-bg-color);
             border-color: var(--input-border-color);
             color: var(--text-color);
-            height: 40px; /* Altezza uniforme per tutti gli input */
+            height: 3.5rem; /* h-14: Altezza input uniforme */
+            border: 1px solid var(--input-border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
         }
         
         input[type="number"]::-webkit-inner-spin-button, 
@@ -79,49 +83,48 @@
         }
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
-          height: 24px; /* Thumb più grande */
+          height: 24px;
           width: 24px;
           border-radius: 50%;
           background: var(--primary-color);
           cursor: pointer;
-          margin-top: -10px; /* Spostato per centrare */
+          margin-top: -10px;
           box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
         }
         input[type=range]::-webkit-slider-runnable-track {
           width: 100%;
           height: 4px;
           cursor: pointer;
-          background: #4b5563; /* Traccia più scura */
+          background: #4b5563;
           border-radius: 2px;
         }
 
-        /* Pallini Battito PIÙ GRANDI (48px) */
+        /* Pallini Battito Visualizzazione (48px) */
         .beat-dot {
             width: 48px; 
             height: 48px;
-            background-color: #4b5563; /* Grigio scuro a riposo */
+            background-color: #4b5563;
             border-radius: 50%;
             transition: background-color 0.1s, transform 0.1s;
         }
         
-        /* Animazione di pulsazione ridimensionata per i 48px */
         .beat-dot.scale-120 { 
             transform: scale(1.15); 
         }
 
         .beat-dot.strong {
-            background-color: var(--accent-color); /* Arancione per il primo battito */
-            box-shadow: 0 0 20px var(--accent-color); /* Ombra aumentata */
+            background-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color);
         }
 
         .beat-dot.weak {
-            background-color: var(--primary-color); /* Blu per i battiti deboli */
-            box-shadow: 0 0 20px var(--primary-color); /* Ombra aumentata */
+            background-color: var(--primary-color);
+            box-shadow: 0 0 20px var(--primary-color);
         }
         
         /* Stili per il Toggle */
         .toggle-label {
-            background-color: #6b7280 !important; /* Grigio scuro per off */
+            background-color: #6b7280 !important;
         }
         .toggle-checkbox:checked + .toggle-label {
             background-color: var(--primary-color) !important;
@@ -130,11 +133,35 @@
         /* Stile per l'indicatore dinamico di tempo */
         .dynamic-tempo-text {
             height: 24px;
-            font-size: 1.25rem; /* text-xl */
-            font-weight: 700; /* font-bold */
-            color: var(--tempo-text-color); /* Colore dinamico come da foto */
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--tempo-text-color);
             margin-top: 24px;
             margin-bottom: 4px;
+        }
+        
+        /* Stile specifico per il bottone Tap Tempo */
+        .tap-tempo-btn {
+            background-color: #f97316; /* Arancione (Accent) */
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); /* Ombra arancione */
+        }
+        .tap-tempo-btn:hover {
+            background-color: #ea580c; /* Arancione più scuro al passaggio del mouse */
+        }
+        .tap-tempo-btn:active {
+            background-color: #c2410c; /* Arancione scuro al click */
+        }
+        
+        /* Stile per i pulsanti stepper */
+        .stepper-btn {
+            background-color: var(--input-bg-color);
+            border: 1px solid var(--input-border-color);
+        }
+        .stepper-btn:hover {
+            background-color: #374151; /* Colore più scuro */
+        }
+        .stepper-btn:active {
+            background-color: #1f2937; /* Colore ancora più scuro */
         }
 
     </style>
@@ -144,21 +171,25 @@
     <div id="app" class="metronome-card">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-100">Metronomo</h1>
         
+        <!-- Timer Countdown Display -->
+        <div id="timerDisplay" class="text-center text-3xl font-extrabold mb-4 text-red-400 hidden">
+            00:00
+        </div>
+        
         <!-- Indicatore del BPM Corrente e del Tempo -->
         <div class="text-center mb-8">
             <p class="text-6xl font-extrabold" id="displayBPM">120</p>
-            <!-- Dimensione ridotta da text-lg a text-sm come richiesto -->
             <p class="text-sm text-gray-300 mt-1" id="currentBPMText">BPM Corrente</p>
         </div>
 
-        <!-- Indicatori del Battito -->
-        <div id="beatIndicators" class="flex justify-center space-x-4">
+        <!-- Indicatori del Battito (Visualizzazione in riproduzione) -->
+        <div id="beatIndicators" class="flex justify-center space-x-4 mb-4" style="min-height: 48px;">
             <!-- I pallini verranno generati qui -->
         </div>
         
         <!-- Indicatore del Tempo Dinamico -->
         <div class="text-center dynamic-tempo-text">
-            <span id="tempoIndicatorText" class="tracking-widest">MODERATO</span>
+            <span id="tempoIndicatorText" class="tracking-widest">MODERATO (109-120)</span>
         </div>
 
 
@@ -168,40 +199,104 @@
                    class="w-full transition duration-150">
         </div>
 
-        <!-- Controlli Principali (Allineati) -->
+        <!-- Controlli Principali (Input) -->
         <div class="grid grid-cols-2 gap-4 mb-6">
             
-            <!-- Campo BPM Iniziale -->
+            <!-- Campo BPM Iniziale con Stepper -->
             <div class="input-group-aligned">
-                <label for="bpm" class="control-label">BPM Iniziale</label>
-                <input type="number" id="bpm" value="120" min="40" max="300" 
-                       class="w-full border rounded-lg p-2 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <label for="bpm" class="control-label">BPM</label>
+                <div class="flex items-center space-x-2">
+                    <!-- Pulsante Decr. 5 BPM -->
+                    <button type="button" onclick="changeValue('bpm', -5)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-5</button>
+                    <!-- Input -->
+                    <input type="number" id="bpm" value="120" min="40" max="300" 
+                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
+                    <!-- Pulsante Incr. 5 BPM -->
+                    <button type="button" onclick="changeValue('bpm', 5)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+5</button>
+                </div>
             </div>
 
-            <!-- Campo Battiti per Misura (Time Signature) -->
-            <div class="input-group-aligned">
-                <label for="beatsPerMeasure" class="control-label">Battiti per Misura</label>
-                <input type="number" id="beatsPerMeasure" value="4" min="2" max="12" 
-                       class="w-full border rounded-lg p-2 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+            <!-- Selettore Battiti per Misura (Dropdown) -->
+            <div class="input-group-aligned relative">
+                <label for="timeSignatureSelect" class="control-label">Battiti per Misura</label>
+                <select id="timeSignatureSelect" class="w-full appearance-none pr-8 text-center">
+                    <option value="2">2/4</option>
+                    <option value="3">3/4</option>
+                    <option value="4" selected>4/4</option>
+                    <option value="5">5/4</option>
+                    <option value="6">6/8</option>
+                    <option value="7">7/4</option>
+                    <option value="8">8/4</option>
+                    <option value="9">9/8</option>
+                    <option value="12">12/8</option>
+                </select>
+                <!-- Aggiunge l'icona freccia a destra -->
+                <div class="absolute inset-y-0 right-0 top-[34px] flex items-center px-2 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
             </div>
         </div>
         
-        <!-- Pulsante START/STOP e Tap Tempo -->
-        <div class="flex space-x-4 mb-6">
-            <button id="startButton" class="flex-grow text-white font-bold py-3 px-4 rounded-xl 
-                                         bg-green-500 hover:bg-green-600 active:bg-green-700 
-                                         transition duration-150 shadow-lg shadow-green-500/50">
+        <!-- Pulsanti START/STOP e TAP TEMPO affiancati (Layout 8/12 e 4/12 per diverse larghezze e py-5 per altezza aumentata) -->
+        <div class="grid grid-cols-12 gap-4 mb-6">
+            <!-- Pulsante START/STOP (col-span-8 per essere più grande) -->
+            <button id="startButton" class="col-span-8 w-full text-white font-bold py-5 px-4 rounded-xl 
+                                             bg-green-500 hover:bg-green-600 active:bg-green-700 
+                                             transition duration-150 shadow-lg shadow-green-500/50">
                 INIZIA
             </button>
-            <button id="tapTempoButton" class="w-1/4 text-white font-bold py-3 px-4 rounded-xl 
-                                                bg-orange-500 hover:bg-orange-600 active:bg-orange-700 
-                                                transition duration-150 shadow-lg shadow-orange-500/50 text-sm">
+            
+            <!-- Pulsante TAP TEMPO (col-span-4 per essere più corto) -->
+            <button id="tapTempoButton" class="col-span-4 w-full text-white font-bold py-5 px-4 rounded-xl 
+                                                tap-tempo-btn 
+                                                transition duration-150 shadow-lg">
                 TAP TEMPO
             </button>
         </div>
-        
+
+
+        <!-- Toggle per il Timer -->
+        <div class="mb-4 flex items-center justify-between p-3 bg-gray-600 rounded-lg shadow-inner">
+            <label for="timerToggle" class="text-sm font-semibold text-gray-100">Attiva Timer</label>
+            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="timerToggle" id="timerToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
+                <label for="timerToggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+            </div>
+        </div>
+
+        <!-- Controlli Timer con Stepper (Visibilità Condizionale) -->
+        <div id="timerControls" class="grid grid-cols-2 gap-4 mb-6 hidden">
+            <!-- Minuti con Stepper -->
+            <div class="input-group-aligned">
+                <label for="timerMinutes" class="control-label">Minuti</label>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="changeValue('timerMinutes', -1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
+                    <input type="number" id="timerMinutes" value="5" min="0" max="99" 
+                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
+                    <button type="button" onclick="changeValue('timerMinutes', 1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                </div>
+            </div>
+            
+            <!-- Secondi con Stepper -->
+            <div class="input-group-aligned">
+                <label for="timerSeconds" class="control-label">Secondi</label>
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="changeValue('timerSeconds', -1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
+                    <input type="number" id="timerSeconds" value="0" min="0" max="59" 
+                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
+                    <button type="button" onclick="changeValue('timerSeconds', 1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Toggle per l'Accelerazione Progressiva -->
-        <div class="mb-6 flex items-center justify-between p-3 bg-gray-600 rounded-lg shadow-inner">
+        <div class="mb-4 flex items-center justify-between p-3 bg-gray-600 rounded-lg shadow-inner">
             <label for="progressiveAccelerationToggle" class="text-sm font-semibold text-gray-100">Accelerazione Progressiva</label>
             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
                 <input type="checkbox" name="toggle" id="progressiveAccelerationToggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
@@ -209,21 +304,33 @@
             </div>
         </div>
 
-        <!-- Controlli di Accelerazione (Visibilità Condizionale e Allineati) -->
+        <!-- Controlli di Accelerazione con Stepper (Visibilità Condizionale e Allineati) -->
         <div id="accelerationControls" class="grid grid-cols-2 gap-4 mb-8 hidden">
             
-            <!-- Campo Misure per Accelerazione -->
+            <!-- Misure per accelerazione con Stepper -->
             <div class="input-group-aligned">
                 <label for="measuresForAcceleration" class="control-label">Misure per accel.</label>
-                <input type="number" id="measuresForAcceleration" value="4" min="1" 
-                       class="w-full border rounded-lg p-2 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="changeValue('measuresForAcceleration', -1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
+                    <input type="number" id="measuresForAcceleration" value="4" min="1" 
+                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
+                    <button type="button" onclick="changeValue('measuresForAcceleration', 1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                </div>
             </div>
 
-            <!-- Campo Aumento BPM -->
+            <!-- Aumento BPM con Stepper -->
             <div class="input-group-aligned">
                 <label for="bpmIncrease" class="control-label">Aumento BPM</label>
-                <input type="number" id="bpmIncrease" value="5" min="1" 
-                       class="w-full border rounded-lg p-2 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150">
+                <div class="flex items-center space-x-2">
+                    <button type="button" onclick="changeValue('bpmIncrease', -1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
+                    <input type="number" id="bpmIncrease" value="5" min="1" 
+                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
+                    <button type="button" onclick="changeValue('bpmIncrease', 1)" 
+                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                </div>
             </div>
         </div>
         
@@ -232,39 +339,17 @@
             Stato: Pronto
         </div>
 
-        <!-- Custom styles for the toggle switch (mantenuto per la funzionalità) -->
         <style>
-            .toggle-checkbox {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
+            /* Stili per il toggle (copiati dal codice precedente per coerenza) */
+            .toggle-checkbox { opacity: 0; width: 0; height: 0; }
             .toggle-label {
-                position: relative;
-                display: block;
-                height: 1.5rem;
-                width: 2.5rem;
-                border-radius: 9999px;
-                cursor: pointer;
-                transition: background-color 0.2s ease;
+                position: relative; display: block; height: 1.5rem; width: 2.5rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease;
             }
             .toggle-label:before {
-                content: '';
-                position: absolute;
-                top: 2px;
-                left: 2px;
-                height: 1.25rem;
-                width: 1.25rem;
-                border-radius: 50%;
-                background: white;
-                transition: transform 0.2s ease;
+                content: ''; position: absolute; top: 2px; left: 2px; height: 1.25rem; width: 1.25rem; border-radius: 50%; background: white; transition: transform 0.2s ease;
             }
-            .toggle-checkbox:checked + .toggle-label {
-                background-color: var(--primary-color);
-            }
-            .toggle-checkbox:checked + .toggle-label:before {
-                transform: translateX(1rem);
-            }
+            .toggle-checkbox:checked + .toggle-label { background-color: var(--primary-color); }
+            .toggle-checkbox:checked + .toggle-label:before { transform: translateX(1rem); }
         </style>
     </div>
 
@@ -283,35 +368,43 @@
 
         // Stato Tap Tempo
         let tapTimes = [];
-        const TAP_MAX_DIFF = 2000; // Max 2 secondi tra i tap
-        const TAP_MIN_COUNT = 3; // Minimo 3 tap per calcolare il BPM
+        const TAP_MAX_DIFF = 2000;
+        const TAP_MIN_COUNT = 3;
 
         // Stato dell'App
-        let nextNoteTime = 0.0; // La prossima nota programmata
-        let beatsPerMeasure = 4;
+        let nextNoteTime = 0.0;
+        let beatsPerMeasure = 4; // Default iniziale
         let progressiveAcceleration = false;
         let measuresForAcceleration = 4;
         let bpmIncrease = 5;
         let initialBPM = 120;
         
+        // Stato Timer
+        let timerWorkerId = null; // ID per l'intervallo di countdown
+        let timerEnabled = false;
+        let remainingTimeSeconds = 0;
+        
         // Elementi DOM
-        const appDiv = document.getElementById('app');
         const startButton = document.getElementById('startButton');
         const tapTempoButton = document.getElementById('tapTempoButton');
         const displayBPM = document.getElementById('displayBPM');
         const beatIndicatorsDiv = document.getElementById('beatIndicators');
-        const tempoIndicatorText = document.getElementById('tempoIndicatorText'); // Elemento di testo di tempo
+        const tempoIndicatorText = document.getElementById('tempoIndicatorText');
         const bpmInput = document.getElementById('bpm');
         const bpmSlider = document.getElementById('bpmSlider');
-        const beatsPerMeasureInput = document.getElementById('beatsPerMeasure');
         const accelerationControls = document.getElementById('accelerationControls');
         const progressiveAccelerationToggle = document.getElementById('progressiveAccelerationToggle');
         const measuresForAccelerationInput = document.getElementById('measuresForAcceleration');
         const bpmIncreaseInput = document.getElementById('bpmIncrease');
         const statusMessage = document.getElementById('statusMessage');
+        const timeSignatureSelect = document.getElementById('timeSignatureSelect'); // Select Battiti
+        const timerToggle = document.getElementById('timerToggle'); 
+        const timerControls = document.getElementById('timerControls'); 
+        const timerMinutesInput = document.getElementById('timerMinutes');
+        const timerSecondsInput = document.getElementById('timerSeconds');
+        const timerDisplay = document.getElementById('timerDisplay');
         
-        // Definizioni dei tempi musicali (Limiti inferiori e superiori)
-        // Aggiornato per riflettere gli intervalli BPM e il nome minuscolo come da richiesta
+        // Definizioni dei tempi musicali
         const tempoMap = [
             { minBPM: 40, maxBPM: 60, name: "Largo" },
             { minBPM: 61, maxBPM: 76, name: "Adagio" },
@@ -322,7 +415,37 @@
             { minBPM: 201, maxBPM: 300, name: "Prestissimo" }
         ];
 
-        // --- Funzioni Audio ---
+        // --- Funzioni di Controllo Stepper ---
+
+        /**
+         * Incrementa o decrementa il valore di un input numerico.
+         * @param {string} elementId L'ID dell'elemento input.
+         * @param {number} step Il passo di incremento/decremento.
+         */
+        function changeValue(elementId, step) {
+            const input = document.getElementById(elementId);
+            if (!input) return;
+
+            let currentValue = parseInt(input.value) || 0;
+            let newValue = currentValue + step;
+
+            // Controlli Min/Max
+            const min = parseInt(input.min) || -Infinity;
+            const max = parseInt(input.max) || Infinity;
+
+            if (newValue < min) newValue = min;
+            if (newValue > max) newValue = max;
+
+            input.value = newValue;
+            
+            // Simula l'evento input per aggiornare la visualizzazione (se BPM)
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        // Espone la funzione globalmente per gli handler onClick nell'HTML
+        window.changeValue = changeValue;
+
+        // --- Funzioni Audio (Invariate) ---
 
         /**
          * Crea un suono a onda quadra per un singolo battito.
@@ -339,10 +462,9 @@
             osc.type = "square";
             osc.frequency.setValueAtTime(frequency, time);
 
-            // Controllo del volume (gain)
             gainNode.gain.setValueAtTime(0, time);
-            gainNode.gain.linearRampToValueAtTime(0.5, time + 0.001); // Attacco rapido
-            gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration); // Rilascio rapido
+            gainNode.gain.linearRampToValueAtTime(0.5, time + 0.001);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
 
             osc.start(time);
             osc.stop(time + duration);
@@ -353,37 +475,28 @@
          */
         function scheduleNote() {
             let noteLength = 60.0 / currentBPM;
-            let noteFrequency = 440; // Tono debole
-            let noteDuration = 0.05; // Durata breve del clic
+            let noteFrequency = 440;
+            let noteDuration = 0.05;
 
-            // Calcola il prossimo battito
             currentBeat = (currentBeat + 1) % beatsPerMeasure;
             
             if (currentBeat === 0) {
-                // Primo battito della misura (Forte)
-                noteFrequency = 880;
+                noteFrequency = 880; // Battito forte
                 currentMeasure++;
             } else {
-                // Altri battiti (Debole)
-                noteFrequency = 440;
+                noteFrequency = 440; // Battito debole
             }
 
-            // Riproduci il battito
             playBeat(nextNoteTime, noteFrequency, noteDuration);
             
-            // Aggiorna la UI al momento della riproduzione
-            // Esegue l'aggiornamento UI sul thread principale tramite un messaggio
-            // Questo assicura che il DOM sia modificato nel modo corretto
             postMessageToMainThread({ type: 'updateUI', beat: currentBeat, bpm: currentBPM });
             
-            // Aggiorna il tempo per la nota successiva
             nextNoteTime += noteLength;
 
-            // Logica di accelerazione (solo se il metronomo è in esecuzione)
+            // Logica di accelerazione
             if (progressiveAcceleration && currentBeat === 0) {
                 if (currentMeasure % measuresForAcceleration === 0 && currentMeasure > 0) {
                     currentBPM += bpmIncrease;
-                    // L'aggiornamento del BPM visivo verrà gestito in postMessageToMainThread
                 }
             }
         }
@@ -392,7 +505,6 @@
          * Funzione principale di pianificazione del metronomo.
          */
         function scheduler() {
-            // Finché c'è tempo da pianificare nel futuro
             while (nextNoteTime < audioContext.currentTime + scheduleAheadTime) {
                 scheduleNote();
             }
@@ -416,7 +528,6 @@
             if (e.type === 'updateUI') {
                 updateBeatIndicators(e.beat);
                 if (e.bpm !== parseInt(displayBPM.textContent)) {
-                    // Aggiorna BPM se l'accelerazione è attiva
                     updateBPMDisplay(e.bpm);
                 }
             }
@@ -427,7 +538,7 @@
          */
         function updateBPMDisplay(bpmValue) {
             const newBPM = parseInt(bpmValue);
-            if (newBPM < 40 || newBPM > 300) return; // Limiti
+            if (newBPM < 40 || newBPM > 300) return;
             
             displayBPM.textContent = newBPM;
             bpmInput.value = newBPM;
@@ -448,12 +559,10 @@
                 const minBPM = tempoEntry.minBPM;
                 const maxBPM = tempoEntry.maxBPM;
                 
-                // Formatta in minuscolo e con l'intervallo BPM tra parentesi
                 const formattedName = name.charAt(0) + name.slice(1).toLowerCase();
                 return `${formattedName} (${minBPM}-${maxBPM})`;
             }
             
-            // Gestione dei limiti estremi (molto lento o molto veloce)
             if (bpm < tempoMap[0].minBPM) {
                 const name = tempoMap[0].name;
                 return `${name.charAt(0) + name.slice(1).toLowerCase()} (<${tempoMap[0].minBPM})`;
@@ -469,17 +578,25 @@
 
         // --- Funzioni UI e Logica ---
 
+        /**
+         * Genera i pallini per la visualizzazione dei battiti in riproduzione.
+         */
         function setupBeatIndicators() {
+            // Aggiorna beatsPerMeasure dal select
+            beatsPerMeasure = parseInt(timeSignatureSelect.value) || 4;
+            
             beatIndicatorsDiv.innerHTML = '';
             for (let i = 0; i < beatsPerMeasure; i++) {
                 const dot = document.createElement('div');
-                // Uso di scale-120 per il nuovo size dei pallini
                 dot.classList.add('beat-dot', 'transform', 'scale-100'); 
                 dot.id = `dot-${i}`;
                 beatIndicatorsDiv.appendChild(dot);
             }
         }
 
+        /**
+         * Aggiorna l'animazione dei pallini in riproduzione.
+         */
         function updateBeatIndicators(beat) {
             const dots = beatIndicatorsDiv.querySelectorAll('.beat-dot');
             dots.forEach(dot => {
@@ -487,19 +604,17 @@
                 dot.classList.add('scale-100');
             });
 
-            // L'indice 0 è il primo battito, ma l'array è 0-based
-            const currentDotIndex = beat; 
-            const currentDot = document.getElementById(`dot-${currentDotIndex}`);
+            const currentDot = document.getElementById(`dot-${beat}`);
             
             if (currentDot) {
-                if (currentDotIndex === 0) {
+                if (beat === 0) {
                     currentDot.classList.add('strong', 'scale-120');
                 } else {
                     currentDot.classList.add('weak', 'scale-120');
                 }
             }
         }
-
+        
         /**
          * Aggiorna lo stato di visibilità dei controlli di accelerazione.
          */
@@ -511,13 +626,41 @@
                 accelerationControls.classList.add('hidden');
             }
         }
+        
+        /**
+         * Gestisce il countdown del timer.
+         */
+        function countdownTimer() {
+            remainingTimeSeconds--;
+            
+            if (remainingTimeSeconds <= 0) {
+                clearInterval(timerWorkerId);
+                timerWorkerId = null;
+                remainingTimeSeconds = 0;
+                updateTimerDisplay();
+                stopMetronome(true); // Indica che è stato fermato dal timer
+                return;
+            }
+            
+            updateTimerDisplay();
+        }
+        
+        /**
+         * Aggiorna il display del timer con il formato MM:SS.
+         */
+        function updateTimerDisplay() {
+            const min = Math.floor(remainingTimeSeconds / 60);
+            const sec = remainingTimeSeconds % 60;
+            timerDisplay.textContent = 
+                `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
 
         /**
          * Gestisce l'evento click del pulsante START/STOP.
          */
         function toggleMetronome() {
             if (isRunning) {
-                stopMetronome();
+                stopMetronome(false);
             } else {
                 startMetronome();
             }
@@ -537,21 +680,44 @@
             // Aggiorna le configurazioni dall'UI
             initialBPM = parseInt(bpmInput.value) || 120;
             currentBPM = initialBPM;
-            beatsPerMeasure = parseInt(beatsPerMeasureInput.value) || 4;
             progressiveAcceleration = progressiveAccelerationToggle.checked;
             measuresForAcceleration = parseInt(measuresForAccelerationInput.value) || 4;
             bpmIncrease = parseInt(bpmIncreaseInput.value) || 5;
+            timerEnabled = timerToggle.checked;
+            beatsPerMeasure = parseInt(timeSignatureSelect.value) || 4; // Legge il valore aggiornato
 
-            // Reset stato
-            currentBeat = beatsPerMeasure - 1; // Iniziamo da -1 in modo che il primo battito sia 0
+            // Configurazione e avvio del Timer (se abilitato)
+            if (timerEnabled) {
+                const minutes = parseInt(timerMinutesInput.value) || 0;
+                const seconds = parseInt(timerSecondsInput.value) || 0;
+                const totalDurationSeconds = minutes * 60 + seconds;
+                remainingTimeSeconds = totalDurationSeconds;
+
+                if (remainingTimeSeconds > 0) {
+                    updateTimerDisplay();
+                    timerDisplay.classList.remove('hidden');
+                    timerWorkerId = setInterval(countdownTimer, 1000); // Avvia il countdown sul thread principale
+                } else {
+                    timerDisplay.classList.add('hidden');
+                    // Timer abilitato ma durata zero, avvisa e non avvia il countdown
+                    statusMessage.textContent = "Timer abilitato ma durata zero. Avvio senza timer.";
+                    statusMessage.classList.remove('hidden');
+                }
+            } else {
+                timerDisplay.classList.add('hidden');
+            }
+
+
+            // Reset stato metronomo
+            currentBeat = beatsPerMeasure - 1;
             currentMeasure = 0;
             nextNoteTime = audioContext.currentTime;
 
             setupBeatIndicators();
             updateBeatIndicators(0);
-            updateBPMDisplay(currentBPM); // Aggiorna anche l'indicatore di tempo
+            updateBPMDisplay(currentBPM);
             
-            // Avvia il Worker per il timer
+            // Avvia il Worker per il timer metronomo
             timerWorker = new Worker(URL.createObjectURL(new Blob([`
                 let timerID = null;
                 let interval = ${lookahead};
@@ -587,7 +753,7 @@
         /**
          * Ferma il metronomo.
          */
-        function stopMetronome() {
+        function stopMetronome(wasTimer = false) {
             isRunning = false;
 
             if (timerWorker) {
@@ -596,17 +762,33 @@
                 timerWorker = null;
             }
             
+            // Ferma e resetta il timer countdown se era in esecuzione
+            if (timerWorkerId) {
+                clearInterval(timerWorkerId);
+                timerWorkerId = null;
+            }
+            remainingTimeSeconds = 0;
+            updateTimerDisplay(); // Aggiorna il display a 00:00
+
             // Reset UI
             startButton.textContent = "INIZIA";
             startButton.classList.remove('bg-red-500', 'hover:bg-red-600', 'shadow-red-500/50');
             startButton.classList.add('bg-green-500', 'hover:bg-green-600', 'shadow-green-500/50');
-            updateBPMDisplay(initialBPM); // Torna al BPM iniziale e aggiorna il testo di tempo
-            statusMessage.textContent = "Stato: Fermato. BPM Iniziale: " + initialBPM;
+            updateBPMDisplay(initialBPM);
             
-            // Rimuove l'evidenziazione dei battiti
-            updateBeatIndicators(beatsPerMeasure); 
+            if (wasTimer) {
+                statusMessage.textContent = "Stato: Fine del tempo! Metronomo fermato automaticamente.";
+            } else {
+                statusMessage.textContent = "Stato: Fermato. BPM Iniziale: " + initialBPM;
+            }
             
-            // Reset BPM effettivo
+            // Rimuove l'evidenziazione e resetta i pallini
+            const dots = beatIndicatorsDiv.querySelectorAll('.beat-dot');
+            dots.forEach(dot => {
+                dot.classList.remove('strong', 'weak', 'scale-120');
+                dot.classList.add('scale-100');
+            });
+            
             currentBPM = initialBPM;
         }
 
@@ -615,23 +797,17 @@
          */
         function handleTapTempo() {
             if (isRunning) {
-                // Se in esecuzione, si ferma e riparte per applicare il nuovo BPM con l'audio worker
-                stopMetronome();
-                // NON si riavvia qui, si aggiorna solo il valore e si lascia all'utente decidere se riavviare
+                stopMetronome(false);
             }
 
             const now = Date.now();
 
-            if (tapTimes.length > 0) {
-                // Se l'ultimo tap è troppo vecchio, resetta
-                if (now - tapTimes[tapTimes.length - 1] > TAP_MAX_DIFF) {
-                    tapTimes = [];
-                }
+            if (tapTimes.length > 0 && now - tapTimes[tapTimes.length - 1] > TAP_MAX_DIFF) {
+                tapTimes = [];
             }
 
             tapTimes.push(now);
 
-            // Mantiene solo gli ultimi 5 tap per un calcolo più reattivo
             if (tapTimes.length > 5) {
                 tapTimes.shift();
             }
@@ -642,38 +818,32 @@
                     intervals.push(tapTimes[i] - tapTimes[i-1]);
                 }
 
-                // Calcola la media degli intervalli in millisecondi
                 const avgInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
-
-                // Calcola il BPM
                 let calculatedBPM = Math.round(60000 / avgInterval);
 
-                // Limita il BPM calcolato
                 if (calculatedBPM < 40) calculatedBPM = 40;
                 if (calculatedBPM > 300) calculatedBPM = 300;
 
-                // Aggiorna l'UI (display, input, slider, tempo text)
                 updateBPMDisplay(calculatedBPM);
-                initialBPM = calculatedBPM; // Aggiorna il BPM iniziale per il prossimo avvio
+                initialBPM = calculatedBPM;
                 
                 statusMessage.textContent = `Tap Tempo: ${calculatedBPM} BPM calcolato.`;
-                statusMessage.classList.remove('hidden');
 
             } else {
                 statusMessage.textContent = `Tap Tempo: Tocca ancora ${TAP_MIN_COUNT - tapTimes.length} volte.`;
-                statusMessage.classList.remove('hidden');
             }
+            statusMessage.classList.remove('hidden');
         }
 
 
         // --- Gestione Eventi e Inizializzazione ---
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Inizializza i pallini indicatori
-            beatsPerMeasure = parseInt(beatsPerMeasureInput.value) || 4;
+            
+            // Inizializza gli elementi UI
             setupBeatIndicators();
-            updateAccelerationControlsVisibility(); // Nasconde/mostra i controlli all'avvio
-            updateBPMDisplay(bpmInput.value); // Inizializza il testo di tempo all'avvio
+            updateAccelerationControlsVisibility();
+            updateBPMDisplay(bpmInput.value);
 
             // Listener per il pulsante START/STOP
             startButton.addEventListener('click', toggleMetronome);
@@ -681,39 +851,48 @@
             // Listener per Tap Tempo
             tapTempoButton.addEventListener('click', handleTapTempo);
 
-            // Listener per la visibilità condizionale
+            // Listener per la visibilità condizionale (Accelerazione)
             progressiveAccelerationToggle.addEventListener('change', updateAccelerationControlsVisibility);
-
-            // Listener per BPM Input (sincronizza con slider, display e testo di tempo)
-            bpmInput.addEventListener('input', () => {
-                const newBPM = parseInt(bpmInput.value) || 120;
-                updateBPMDisplay(newBPM);
-                initialBPM = newBPM;
-                if (isRunning) {
-                    currentBPM = newBPM; 
+            
+            // Listener per il toggle del Timer
+            timerToggle.addEventListener('change', () => {
+                timerEnabled = timerToggle.checked;
+                if (timerEnabled) {
+                    timerControls.classList.remove('hidden');
+                } else {
+                    timerControls.classList.add('hidden');
                 }
-            });
-
-            // Listener per BPM Slider (sincronizza con input, display e testo di tempo)
-            bpmSlider.addEventListener('input', () => {
-                const newBPM = parseInt(bpmSlider.value) || 120;
-                updateBPMDisplay(newBPM);
-                initialBPM = newBPM;
-                if (isRunning) {
-                    currentBPM = newBPM; 
-                }
-            });
-
-            // Listener per Battiti per Misura (aggiorna gli indicatori)
-            beatsPerMeasureInput.addEventListener('input', () => {
-                const newBeats = parseInt(beatsPerMeasureInput.value) || 4;
-                beatsPerMeasure = newBeats;
-                setupBeatIndicators();
             });
             
-            // PWA: Registra il service worker (semplificato per l'ambiente a file unico)
+            // Listener per la selezione dei Battiti (Time Signature)
+            timeSignatureSelect.addEventListener('change', () => {
+                if (isRunning) {
+                    statusMessage.textContent = "Ferma il metronomo per cambiare i battiti per misura.";
+                    statusMessage.classList.remove('hidden');
+                    // Riporta il select al valore corrente se in esecuzione
+                    timeSignatureSelect.value = beatsPerMeasure.toString();
+                    return;
+                }
+                beatsPerMeasure = parseInt(timeSignatureSelect.value) || 4;
+                setupBeatIndicators(); // Ridisegna i pallini
+            });
+
+
+            // Listener per BPM Input, Slider, e Stepper (grazie a dispatchEvent('input'))
+            const bpmChangeHandler = (event) => {
+                const newBPM = parseInt(event.target.value) || 120;
+                updateBPMDisplay(newBPM);
+                initialBPM = newBPM;
+                if (isRunning) {
+                    currentBPM = newBPM; 
+                }
+            };
+            bpmInput.addEventListener('input', bpmChangeHandler);
+            bpmSlider.addEventListener('input', bpmChangeHandler);
+            
+            // PWA: Registra il service worker
             const serviceWorkerContent = `
-                const CACHE_NAME = 'metronome-cache-v2';
+                const CACHE_NAME = 'metronome-cache-v5'; // Versione aggiornata
                 const urlsToCache = ['/', 'https://cdn.tailwindcss.com'];
                 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))); });
                 self.addEventListener('fetch', event => { event.respondWith(caches.match(event.request).then(response => response || fetch(event.request))); });
