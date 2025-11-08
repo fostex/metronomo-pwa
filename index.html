@@ -13,7 +13,7 @@
             --primary-color: #3b82f6; /* Blu di Tailwind 500 */
             --accent-color: #f97316; /* Arancione di Tailwind 500 */
             --bg-color: #1f2937; /* Grigio scuro/Nero */
-            --card-color: #374151; /* Grigio medio scuro */
+            --card-color: #2d3748; /* NUOVO: Grigio/Blu scuro per il riquadro */
             --text-color: #f9fafb; /* Testo molto chiaro */
             --input-bg-color: #4b5563; /* Sfondo input scuro */
             --input-border-color: #6b7280;
@@ -56,8 +56,8 @@
             margin-bottom: 4px; /* Spazio tra label e input */
         }
 
-        /* Stili per input numerici e select */
-        input[type="number"], select {
+        /* Rimuove le frecce di default dagli input di tipo number */
+        input[type="number"] {
             appearance: none;
             -moz-appearance: textfield;
             background-color: var(--input-bg-color);
@@ -67,6 +67,7 @@
             border: 1px solid var(--input-border-color);
             border-radius: 0.5rem;
             padding: 0.5rem 0.75rem;
+            text-align: center; 
         }
         
         input[type="number"]::-webkit-inner-spin-button, 
@@ -99,7 +100,7 @@
           border-radius: 2px;
         }
 
-        /* Pallini Battito Visualizzazione (48px) */
+        /* Pallini Battito Visualizzazione */
         .beat-dot {
             width: 48px; 
             height: 48px;
@@ -122,14 +123,6 @@
             box-shadow: 0 0 20px var(--primary-color);
         }
         
-        /* Stili per il Toggle */
-        .toggle-label {
-            background-color: #6b7280 !important;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: var(--primary-color) !important;
-        }
-        
         /* Stile per l'indicatore dinamico di tempo */
         .dynamic-tempo-text {
             height: 24px;
@@ -148,22 +141,82 @@
         .tap-tempo-btn:hover {
             background-color: #ea580c; /* Arancione più scuro al passaggio del mouse */
         }
-        .tap-tempo-btn:active {
-            background-color: #c2410c; /* Arancione scuro al click */
+        
+        /* --------------------------------- */
+        /* Stili per i pulsanti stepper VERTICALI */
+        /* --------------------------------- */
+        .stepper-btn-vertical {
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            line-height: 1;
+            transition: background-color 0.1s;
+        }
+        .stepper-btn-vertical:hover {
+            background-color: #374151;
         }
         
-        /* Stile per i pulsanti stepper */
-        .stepper-btn {
-            background-color: var(--input-bg-color);
+        /* Contenitore Stepper */
+        .stepper-vertical-group {
+            display: flex;
+            align-items: stretch; /* Allunga l'input all'altezza del contenitore */
             border: 1px solid var(--input-border-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 3.5rem; /* Altezza uniforme h-14 */
         }
-        .stepper-btn:hover {
-            background-color: #374151; /* Colore più scuro */
-        }
-        .stepper-btn:active {
-            background-color: #1f2937; /* Colore ancora più scuro */
+        
+        /* Input centrale nel gruppo stepper */
+        .stepper-vertical-group input[type="number"] {
+            border: none;
+            border-radius: 0;
+            flex-grow: 1; /* Permette all'input di occupare lo spazio centrale */
+            padding: 0.5rem 0.5rem;
+            font-size: 1.5rem;
         }
 
+        /* Controlli verticali per + e - */
+        .stepper-controls-vertical {
+            display: flex;
+            flex-direction: column;
+            width: 38px; /* Larghezza fissa per i controlli */
+            height: 100%;
+        }
+        
+        /* Stili specifici per i pulsanti verticali */
+        .stepper-btn-vertical.top {
+            flex-grow: 1;
+            border-bottom: 1px solid var(--input-border-color);
+            border-left: 1px solid var(--input-border-color);
+            padding: 0;
+            font-size: 1.125rem; /* text-lg */
+        }
+        .stepper-btn-vertical.bottom {
+            flex-grow: 1;
+            border-left: 1px solid var(--input-border-color);
+            padding: 0;
+            font-size: 1.125rem; /* text-lg */
+        }
+        
+        /* Stili per il Toggle */
+        .toggle-label {
+            background-color: #6b7280 !important;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--primary-color) !important;
+        }
+        .toggle-checkbox { opacity: 0; width: 0; height: 0; }
+        .toggle-label {
+            position: relative; display: block; height: 1.5rem; width: 2.5rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .toggle-label:before {
+            content: ''; position: absolute; top: 2px; left: 2px; height: 1.25rem; width: 1.25rem; border-radius: 50%; background: white; transition: transform 0.2s ease;
+        }
+        .toggle-checkbox:checked + .toggle-label { background-color: var(--primary-color); }
+        .toggle-checkbox:checked + .toggle-label:before { transform: translateX(1rem); }
     </style>
 </head>
 <body>
@@ -202,26 +255,24 @@
         <!-- Controlli Principali (Input) -->
         <div class="grid grid-cols-2 gap-4 mb-6">
             
-            <!-- Campo BPM Iniziale con Stepper -->
+            <!-- Campo BPM con Stepper Verticale -->
             <div class="input-group-aligned">
                 <label for="bpm" class="control-label">BPM</label>
-                <div class="flex items-center space-x-2">
-                    <!-- Pulsante Decr. 5 BPM -->
-                    <button type="button" onclick="changeValue('bpm', -5)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-5</button>
-                    <!-- Input -->
-                    <input type="number" id="bpm" value="120" min="40" max="300" 
-                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
-                    <!-- Pulsante Incr. 5 BPM -->
-                    <button type="button" onclick="changeValue('bpm', 5)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+5</button>
+                <div class="stepper-vertical-group w-full">
+                    <input type="number" id="bpm" value="120" min="40" max="300" data-step="5">
+                    <div class="stepper-controls-vertical">
+                        <button type="button" onclick="changeValue('bpm', 5)" 
+                                class="stepper-btn-vertical top">+</button>
+                        <button type="button" onclick="changeValue('bpm', -5)" 
+                                class="stepper-btn-vertical bottom">-</button>
+                    </div>
                 </div>
             </div>
 
             <!-- Selettore Battiti per Misura (Dropdown) -->
             <div class="input-group-aligned relative">
                 <label for="timeSignatureSelect" class="control-label">Battiti per Misura</label>
-                <select id="timeSignatureSelect" class="w-full appearance-none pr-8 text-center">
+                <select id="timeSignatureSelect" class="w-full appearance-none pr-8 text-center bg-gray-600 h-14 rounded-lg border border-gray-500 text-white">
                     <option value="2">2/4</option>
                     <option value="3">3/4</option>
                     <option value="4" selected>4/4</option>
@@ -266,31 +317,35 @@
             </div>
         </div>
 
-        <!-- Controlli Timer con Stepper (Visibilità Condizionale) -->
+        <!-- Controlli Timer con Stepper Verticale (Visibilità Condizionale) -->
         <div id="timerControls" class="grid grid-cols-2 gap-4 mb-6 hidden">
-            <!-- Minuti con Stepper -->
+            <!-- Minuti con Stepper Verticale -->
             <div class="input-group-aligned">
                 <label for="timerMinutes" class="control-label">Minuti</label>
-                <div class="flex items-center space-x-2">
-                    <button type="button" onclick="changeValue('timerMinutes', -1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
-                    <input type="number" id="timerMinutes" value="5" min="0" max="99" 
-                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
-                    <button type="button" onclick="changeValue('timerMinutes', 1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                <div class="stepper-vertical-group w-full">
+                    <!-- Aggiunto data-step="1" per la logica JS, anche se già gestito dal changeValue -->
+                    <input type="number" id="timerMinutes" value="5" min="0" max="99" data-step="1">
+                    <div class="stepper-controls-vertical">
+                        <button type="button" onclick="changeValue('timerMinutes', 1)" 
+                                class="stepper-btn-vertical top">+</button>
+                        <button type="button" onclick="changeValue('timerMinutes', -1)" 
+                                class="stepper-btn-vertical bottom">-</button>
+                    </div>
                 </div>
             </div>
             
-            <!-- Secondi con Stepper -->
+            <!-- Secondi con Stepper Verticale -->
             <div class="input-group-aligned">
                 <label for="timerSeconds" class="control-label">Secondi</label>
-                <div class="flex items-center space-x-2">
-                    <button type="button" onclick="changeValue('timerSeconds', -1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
-                    <input type="number" id="timerSeconds" value="0" min="0" max="59" 
-                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
-                    <button type="button" onclick="changeValue('timerSeconds', 1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                <div class="stepper-vertical-group w-full">
+                    <!-- Aggiunto data-step="1" per la logica JS, anche se già gestito dal changeValue -->
+                    <input type="number" id="timerSeconds" value="0" min="0" max="59" data-step="1">
+                    <div class="stepper-controls-vertical">
+                        <button type="button" onclick="changeValue('timerSeconds', 1)" 
+                                class="stepper-btn-vertical top">+</button>
+                        <button type="button" onclick="changeValue('timerSeconds', -1)" 
+                                class="stepper-btn-vertical bottom">-</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -304,32 +359,36 @@
             </div>
         </div>
 
-        <!-- Controlli di Accelerazione con Stepper (Visibilità Condizionale e Allineati) -->
+        <!-- Controlli di Accelerazione con Stepper Verticale (Visibilità Condizionale e Allineati) -->
         <div id="accelerationControls" class="grid grid-cols-2 gap-4 mb-8 hidden">
             
-            <!-- Misure per accelerazione con Stepper -->
+            <!-- Misure per accelerazione con Stepper Verticale -->
             <div class="input-group-aligned">
                 <label for="measuresForAcceleration" class="control-label">Misure per accel.</label>
-                <div class="flex items-center space-x-2">
-                    <button type="button" onclick="changeValue('measuresForAcceleration', -1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
-                    <input type="number" id="measuresForAcceleration" value="4" min="1" 
-                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
-                    <button type="button" onclick="changeValue('measuresForAcceleration', 1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                <div class="stepper-vertical-group w-full">
+                    <!-- Aggiunto data-step="1" per la logica JS, anche se già gestito dal changeValue -->
+                    <input type="number" id="measuresForAcceleration" value="4" min="1" data-step="1">
+                    <div class="stepper-controls-vertical">
+                        <button type="button" onclick="changeValue('measuresForAcceleration', 1)" 
+                                class="stepper-btn-vertical top">+</button>
+                        <button type="button" onclick="changeValue('measuresForAcceleration', -1)" 
+                                class="stepper-btn-vertical bottom">-</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Aumento BPM con Stepper -->
+            <!-- Aumento BPM con Stepper Verticale -->
             <div class="input-group-aligned">
                 <label for="bpmIncrease" class="control-label">Aumento BPM</label>
-                <div class="flex items-center space-x-2">
-                    <button type="button" onclick="changeValue('bpmIncrease', -1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">-</button>
-                    <input type="number" id="bpmIncrease" value="5" min="1" 
-                           class="w-full h-14 text-center focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex-grow">
-                    <button type="button" onclick="changeValue('bpmIncrease', 1)" 
-                            class="stepper-btn flex-shrink-0 w-10 h-14 rounded-lg text-2xl font-bold transition duration-150">+</button>
+                <div class="stepper-vertical-group w-full">
+                    <!-- Aggiunto data-step="1" per la logica JS, anche se già gestito dal changeValue -->
+                    <input type="number" id="bpmIncrease" value="5" min="1" data-step="1">
+                    <div class="stepper-controls-vertical">
+                        <button type="button" onclick="changeValue('bpmIncrease', 1)" 
+                                class="stepper-btn-vertical top">+</button>
+                        <button type="button" onclick="changeValue('bpmIncrease', -1)" 
+                                class="stepper-btn-vertical bottom">-</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -338,19 +397,6 @@
         <div id="statusMessage" class="mt-4 p-3 bg-blue-800 border border-blue-600 text-blue-100 rounded-lg text-sm hidden">
             Stato: Pronto
         </div>
-
-        <style>
-            /* Stili per il toggle (copiati dal codice precedente per coerenza) */
-            .toggle-checkbox { opacity: 0; width: 0; height: 0; }
-            .toggle-label {
-                position: relative; display: block; height: 1.5rem; width: 2.5rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease;
-            }
-            .toggle-label:before {
-                content: ''; position: absolute; top: 2px; left: 2px; height: 1.25rem; width: 1.25rem; border-radius: 50%; background: white; transition: transform 0.2s ease;
-            }
-            .toggle-checkbox:checked + .toggle-label { background-color: var(--primary-color); }
-            .toggle-checkbox:checked + .toggle-label:before { transform: translateX(1rem); }
-        </style>
     </div>
 
     <script>
@@ -433,12 +479,19 @@
             const min = parseInt(input.min) || -Infinity;
             const max = parseInt(input.max) || Infinity;
 
-            if (newValue < min) newValue = min;
-            if (newValue > max) newValue = max;
+            // Logica specifica per i secondi (roll over 0-59)
+            if (elementId === 'timerSeconds') {
+                if (newValue < 0) newValue = 59; // 0 - 1 = 59
+                if (newValue > 59) newValue = 0; // 59 + 1 = 0
+            } else {
+                // Per tutti gli altri campi (BPM, Minuti, Accelerazione)
+                if (newValue < min) newValue = min;
+                if (newValue > max) newValue = max;
+            }
 
             input.value = newValue;
             
-            // Simula l'evento input per aggiornare la visualizzazione (se BPM)
+            // Simula l'evento input per aggiornare la visualizzazione
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }
         
@@ -881,18 +934,46 @@
             // Listener per BPM Input, Slider, e Stepper (grazie a dispatchEvent('input'))
             const bpmChangeHandler = (event) => {
                 const newBPM = parseInt(event.target.value) || 120;
+                // Assicura che il valore rimanga nei limiti
+                const min = parseInt(event.target.min) || 40;
+                const max = parseInt(event.target.max) || 300;
+                if (newBPM < min) { event.target.value = min; return; }
+                if (newBPM > max) { event.target.value = max; return; }
+                
                 updateBPMDisplay(newBPM);
                 initialBPM = newBPM;
                 if (isRunning) {
                     currentBPM = newBPM; 
                 }
             };
+            
             bpmInput.addEventListener('input', bpmChangeHandler);
             bpmSlider.addEventListener('input', bpmChangeHandler);
             
+            // Aggiunge listener generici agli input numerici per gestire min/max
+            const numberInputs = [timerMinutesInput, timerSecondsInput, measuresForAccelerationInput, bpmIncreaseInput];
+            numberInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let val = parseInt(e.target.value);
+                    const min = parseInt(e.target.min) || -Infinity;
+                    const max = parseInt(e.target.max) || Infinity;
+                    
+                    if (e.target.id === 'timerSeconds') {
+                        // Logica roll-over specifica
+                        if (val < 0) val = 59;
+                        if (val > 59) val = 0;
+                    } else {
+                        // Logica di clamp generica
+                        if (val < min) val = min;
+                        if (val > max) val = max;
+                    }
+                    e.target.value = val;
+                });
+            });
+
             // PWA: Registra il service worker
             const serviceWorkerContent = `
-                const CACHE_NAME = 'metronome-cache-v5'; // Versione aggiornata
+                const CACHE_NAME = 'metronome-cache-v6'; // Versione aggiornata
                 const urlsToCache = ['/', 'https://cdn.tailwindcss.com'];
                 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))); });
                 self.addEventListener('fetch', event => { event.respondWith(caches.match(event.request).then(response => response || fetch(event.request))); });
