@@ -2,7 +2,7 @@
     "name": "Metronomo Pro",
     "short_name": "Metronomo",
     "description": "Un metronomo avanzato con funzioni di timer e accelerazione.",
-    "start_url": "./index3.html",
+    "start_url": "./index.html",
     "display": "standalone",
     "orientation": "portrait",
     "background_color": "#1f2937",
@@ -25,4 +25,5 @@
             "purpose": "maskable"
         }
     ]
+
 }
