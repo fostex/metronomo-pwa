@@ -111,12 +111,12 @@
         /* MANOPOLA SLIDER PIÙ GRANDE */
         input[type=range]::-webkit-slider-thumb {
           -webkit-appearance: none;
-          height: 32px; /* Aumentato da 24px */
-          width: 32px; /* Aumentato da 24px */
+          height: 32px; 
+          width: 32px; 
           border-radius: 50%;
           background: var(--primary-color);
           cursor: pointer;
-          margin-top: -14px; /* Adattato per centraggio */
+          margin-top: -14px; 
           box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
         }
         /* AGGIUNTO STILE MOZILLA PER COMPATIBILITÀ MANOPOLA */
@@ -168,16 +168,17 @@
         
         .small-stepper-group { display: flex; align-items: center; justify-content: center; height: 3.5rem; border: none !important; background-color: transparent !important; padding: 0; }
         
-        /* Aggiungo un margine per separare i pulsanti tondi dall'input */
+        /* FIX: Aggiungo margine MINIMO per separare i pulsanti tondi dall'input */
         .small-stepper-group .small-circle-stepper-btn {
-            margin: 0 4px; 
+            margin: 0 2px; 
         }
         
+        /* FIX: Riduco la larghezza dell'input e rimuovo i margini per ottimizzare lo spazio */
         .small-stepper-group input[type="number"] {
             background-color: transparent !important; border: none !important; box-shadow: none !important;
             color: white !important; font-size: 1.5rem !important; font-weight: 700 !important;
-            height: 3.5rem !important; width: 70px !important; padding: 0 !important;
-            margin: 0 0.5rem !important; line-height: 1 !important; text-align: center !important; border-radius: 0.5rem !important; 
+            height: 3.5rem !important; width: 60px !important; /* RIDOTTO: 60px */ padding: 0 !important;
+            margin: 0 !important; /* Rimosso margine */ line-height: 1 !important; text-align: center !important; border-radius: 0.5rem !important; 
         }
         
         /* --------------------------------- */
@@ -201,8 +202,8 @@
         /* STILI INDICATORI BATTITO (PALLINI) - DIMENSIONE MAGGIORATA */
         /* --------------------------------- */
         .beat-dot {
-            width: 28px; /* Aumentato da 20px */
-            height: 28px; /* Aumentato da 20px */
+            width: 28px; 
+            height: 28px; 
             border-radius: 50%;
             background-color: #4b5563; /* Grigio scuro (spento) */
             transition: background-color 0.05s ease, transform 0.05s ease;
@@ -210,12 +211,12 @@
 
         .beat-dot.accent {
             background-color: var(--primary-color); /* Primo battito (Blu) */
-            transform: scale(1.15); /* Ingrandimento più contenuto */
+            transform: scale(1.15); 
         }
 
         .beat-dot.strong {
             background-color: #fca5a5; /* Battiti successivi (Rosso chiaro) */
-            transform: scale(1.1); /* Ingrandimento più contenuto */
+            transform: scale(1.1); 
         }
         
         /* Stili rimanenti */
@@ -331,10 +332,10 @@
                 <label for="timerMinutes" class="control-label">Minuti</label>
                 <div class="small-stepper-group w-full">
                     <button type="button" id="timerMinutesDown" 
-                            class="small-circle-stepper-btn mx-2">-</button>
+                            class="small-circle-stepper-btn">-</button>
                     <input type="number" id="timerMinutes" value="1" min="0" max="99" data-step="1">
                     <button type="button" id="timerMinutesUp" 
-                            class="small-circle-stepper-btn mx-2">+</button>
+                            class="small-circle-stepper-btn">+</button>
                 </div>
             </div>
             
@@ -342,10 +343,10 @@
                 <label for="timerSeconds" class="control-label">Secondi</label>
                 <div class="small-stepper-group w-full">
                     <button type="button" id="timerSecondsDown" 
-                            class="small-circle-stepper-btn mx-2">-</button>
+                            class="small-circle-stepper-btn">-</button>
                     <input type="number" id="timerSeconds" value="0" min="0" max="59" data-step="1">
                     <button type="button" id="timerSecondsUp" 
-                            class="small-circle-stepper-btn mx-2">+</button>
+                            class="small-circle-stepper-btn">+</button>
                 </div>
             </div>
         </div>
@@ -364,10 +365,10 @@
                 <label for="measuresForAcceleration" class="control-label">Misure per accel.</label>
                 <div class="small-stepper-group w-full">
                     <button type="button" id="measuresForAccelerationDown" 
-                            class="small-circle-stepper-btn mx-2">-</button>
+                            class="small-circle-stepper-btn">-</button>
                     <input type="number" id="measuresForAcceleration" value="1" min="1" data-step="1">
                     <button type="button" id="measuresForAccelerationUp" 
-                            class="small-circle-stepper-btn mx-2">+</button>
+                            class="small-circle-stepper-btn">+</button>
                 </div>
             </div>
 
@@ -375,10 +376,10 @@
                 <label for="bpmIncrease" class="control-label">Aumento BPM</label>
                 <div class="small-stepper-group w-full">
                     <button type="button" id="bpmIncreaseDown" 
-                            class="small-circle-stepper-btn mx-2">-</button>
+                            class="small-circle-stepper-btn">-</button>
                     <input type="number" id="bpmIncrease" value="1" min="1" data-step="1">
                     <button type="button" id="bpmIncreaseUp" 
-                            class="small-circle-stepper-btn mx-2">+</button>
+                            class="small-circle-stepper-btn">+</button>
                 </div>
             </div>
 
@@ -413,7 +414,7 @@
         
         // Variabili Tap Tempo (NEW)
         let tapTimes = [];
-        const MAX_TAPS = 4; // Usa gli ultimi 4 tap
+        const MAX_TAPS = 4; 
         
         // Variabili Timer
         let remainingTimerSeconds = 0;
@@ -537,7 +538,7 @@
             const statusMessage = document.getElementById('statusMessage');
 
             if (tapTimes.length > 0 && (now - tapTimes[tapTimes.length - 1]) > 2000) {
-                tapTimes = []; // Reset se il tempo dall'ultimo tap è troppo lungo (> 2 secondi)
+                tapTimes = []; 
             }
 
             tapTimes.push(now);
@@ -555,7 +556,6 @@
                 
                 let newBPM = Math.round(60000 / averageInterval);
                 
-                // Clampa BPM al range consentito
                 const minBPM = 40;
                 const maxBPM = 300;
                 if (newBPM < minBPM) newBPM = minBPM;
@@ -585,25 +585,21 @@
             document.getElementById('timerDisplay').textContent = display;
         }
 
-        // NUOVA FUNZIONE: Aggiorna il timer se il metronomo è in esecuzione
         function updateTimerDuration() {
             const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
             const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
             const totalDuration = (minutes * 60) + seconds;
-            isTimerActive = document.getElementById('timerToggle').checked; // Aggiorna lo stato
+            isTimerActive = document.getElementById('timerToggle').checked; 
 
             if (isRunning && isTimerActive) {
-                // 1. Pulisce il vecchio intervallo
                 if (timerCountdownInterval) {
                     clearInterval(timerCountdownInterval);
                 }
                 
-                // 2. Imposta la nuova durata
                 remainingTimerSeconds = totalDuration;
                 document.getElementById('timerDisplay').classList.remove('hidden');
                 updateTimerDisplay();
 
-                // 3. Avvia il nuovo intervallo
                 timerCountdownInterval = setInterval(() => {
                     remainingTimerSeconds--;
                     updateTimerDisplay();
@@ -614,14 +610,12 @@
                     }
                 }, 1000);
             } else if (!isTimerActive && isRunning) {
-                 // Se il metronomo è avviato ma il timer viene disattivato
                  if (timerCountdownInterval) {
                     clearInterval(timerCountdownInterval);
                     timerCountdownInterval = null;
                     document.getElementById('timerDisplay').classList.add('hidden');
                 }
             } else {
-                // Se non è in esecuzione, aggiorna solo la variabile per il prossimo avvio
                 remainingTimerSeconds = totalDuration;
             }
         }
@@ -643,12 +637,11 @@
                 
                 // 2. Configurazione Accelerazione (Aggiorna le variabili globali all'avvio)
                 updateAccelerationVars();
-                measuresCounter = 0; // Reset contatore misure
+                measuresCounter = 0; 
                 
                 // 3. Configurazione Timer
                 isTimerActive = document.getElementById('timerToggle').checked;
                 if (isTimerActive) {
-                    // La funzione updateTimerDuration gestisce il reset e l'avvio del countdown
                     const minutes = parseInt(document.getElementById('timerMinutes').value) || 0;
                     const seconds = parseInt(document.getElementById('timerSeconds').value) || 0;
                     const totalTimerSeconds = (minutes * 60) + seconds;
@@ -660,8 +653,7 @@
                         return;
                     }
                     
-                    // Avvia il countdown (ricicla la logica di update)
-                    isRunning = true; // Necessario per updateTimerDuration
+                    isRunning = true; 
                     updateTimerDuration();
                 }
 
@@ -715,7 +707,6 @@
                     timerWorker = null;
                 }
                 
-                // Stop Timer
                 if (timerCountdownInterval) {
                     clearInterval(timerCountdownInterval);
                     timerCountdownInterval = null;
@@ -726,14 +717,11 @@
                 startButton.classList.replace('bg-red-500', 'bg-green-500');
                 startButton.classList.replace('shadow-red-500/50', 'shadow-green-500/50');
                 
-                // Resetta gli indicatori visivi
                 document.querySelectorAll('.beat-dot').forEach(dot => {
                     dot.classList.remove('accent', 'strong');
                 });
                 
-                // Nasconde il messaggio di stato (se presente)
                 document.getElementById('statusMessage').classList.add('hidden');
-                // Resetta lo stato del Tap Tempo
                 tapTimes = []; 
             }
         }
@@ -746,7 +734,6 @@
             const beatIndicatorsDiv = document.getElementById('beatIndicators');
             if (!beatIndicatorsDiv) return;
             beatIndicatorsDiv.innerHTML = '';
-            // Si assicura che il numero di pallini corrisponda ai battiti per misura
             for (let i = 0; i < beatsPerMeasure; i++) {
                 const dot = document.createElement('div');
                 dot.classList.add('beat-dot'); 
@@ -755,32 +742,26 @@
             }
         }
         
-        // FUNZIONE UNIFICATA per aggiornare le variabili Metronomo
         function updateMetronomeConfig() {
             const timeSignatureSelect = document.getElementById('timeSignatureSelect'); 
             const subdivisionSelect = document.getElementById('subdivisionSelect');
             
-            // Aggiorna le variabili globali
             if (timeSignatureSelect) beatsPerMeasure = parseInt(timeSignatureSelect.value) || 4;
             if (subdivisionSelect) subdivisionFactor = parseInt(subdivisionSelect.value) || 1;
             
             totalSubBeats = beatsPerMeasure * subdivisionFactor;
             
-            // Ridisegna i pallini
             setupBeatIndicators(); 
         }
 
-        // NUOVA FUNZIONE: Aggiorna le variabili di Accelerazione
         function updateAccelerationVars() {
             isAccelerationActive = document.getElementById('progressiveAccelerationToggle').checked;
             measuresToAccelerate = parseInt(document.getElementById('measuresForAcceleration').value) || 1;
             bpmIncreaseAmount = parseInt(document.getElementById('bpmIncrease').value) || 1;
             
-            // Se l'accelerazione viene disattivata in corsa, azzera il contatore
             if (!isAccelerationActive) {
                 measuresCounter = 0;
             }
-            // Le modifiche vengono prese dal scheduler nel tick successivo
         }
 
         function getTempoName(bpm) {
@@ -803,7 +784,6 @@
             
             if (newBPM < 40 || newBPM > 300 || !bpmSlider || !tempoIndicatorText) return;
             
-            // Aggiorna la variabile globale usata dallo scheduler (dinamico)
             initialBPM = newBPM; 
             
             bpmSlider.value = newBPM;
@@ -849,7 +829,6 @@
                 return;
             }
 
-            // Logica per tutti gli altri campi type="number"
             let currentValue = parseInt(input.value) || 0;
             let newValue = currentValue + step;
 
@@ -861,25 +840,30 @@
             if (elementId === 'timerSeconds') {
                 if (newValue < 0) newValue = 59; 
                 if (newValue > 59) newValue = 0; 
-                // Dopo aver aggiornato i secondi, gestisce l'aggiornamento dinamico del timer
                 if (isRunning && document.getElementById('timerToggle').checked) {
+                    // Update dinamico del timer
+                    input.value = newValue; // Aggiorno prima il valore
                     updateTimerDuration(); 
+                    return; // Esco subito
                 }
             } else if (elementId === 'timerMinutes') {
                 if (newValue < min) newValue = min; 
                 if (newValue > max) newValue = max;
                 if (isRunning && document.getElementById('timerToggle').checked) {
+                    input.value = newValue;
                     updateTimerDuration();
+                    return;
                 }
-            } else {
+            } else if (elementId === 'measuresForAcceleration' || elementId === 'bpmIncrease') {
                 if (newValue < min) newValue = min; 
                 if (newValue > max) newValue = max;
-                // Gestisce l'aggiornamento dinamico dell'accelerazione
-                if (isRunning && (elementId === 'measuresForAcceleration' || elementId === 'bpmIncrease')) {
-                    updateAccelerationVars();
+                if (isRunning && document.getElementById('progressiveAccelerationToggle').checked) {
+                    input.value = newValue;
+                    updateAccelerationVars(); // Update dinamico dell'accelerazione
+                    return;
                 }
             }
-
+            // Se non è dinamico o non è il timer/accelerazione, aggiorna solo il valore
             input.value = newValue;
             input.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -895,7 +879,6 @@
                 accelerationControls.classList.add('hidden');
             }
 
-            // Aggiorna le variabili globali immediatamente se in corsa
             if (isRunning) {
                 updateAccelerationVars(); 
             }
@@ -911,7 +894,6 @@
                 timerControls.classList.add('hidden');
             }
 
-            // Aggiorna lo stato del timer immediatamente se in corsa
             if (isRunning) {
                 updateTimerDuration();
             }
@@ -923,7 +905,6 @@
         // ====================================================
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Riferimenti DOM
             const bpmInput = document.getElementById('bpm'); 
             const bpmSlider = document.getElementById('bpmSlider');
             const startButton = document.getElementById('startButton');
@@ -933,11 +914,8 @@
             const timeSignatureSelect = document.getElementById('timeSignatureSelect'); 
             const subdivisionSelect = document.getElementById('subdivisionSelect');
             
-            // Riferimenti ai controlli di accelerazione
             const measuresForAcceleration = document.getElementById('measuresForAcceleration');
             const bpmIncrease = document.getElementById('bpmIncrease');
-
-            // Riferimenti ai controlli del timer
             const timerMinutes = document.getElementById('timerMinutes');
             const timerSeconds = document.getElementById('timerSeconds');
 
@@ -956,13 +934,9 @@
 
             // 3. Listener per la visibilità condizionale e CONFIGURAZIONE DINAMICA
             
-            // Timer Toggle
             timerToggle.addEventListener('change', updateTimerControlsVisibility);
-            
-            // Accelerazione Toggle
             progressiveAccelerationToggle.addEventListener('change', updateAccelerationControlsVisibility);
 
-            // Misure e Suddivisioni (Aggiornamento dinamico)
             timeSignatureSelect.addEventListener('change', updateMetronomeConfig);
             subdivisionSelect.addEventListener('change', updateMetronomeConfig);
             
@@ -975,7 +949,7 @@
             timerSeconds.addEventListener('input', updateTimerDuration);
 
 
-            // 4. Gestione input BPM e Slider (Già dinamico)
+            // 4. Gestione input BPM e Slider
             const handleBPMInput = (event) => {
                 let rawValue = event.target.value;
                 const min = parseInt(bpmInput.min) || 40;
