@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metronomo Avanzato</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f2937"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Metronomo">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Stili personalizzati per la PWA */
@@ -340,6 +347,7 @@
             <input type="range" id="subdivisionVolumeSlider" min="0" max="1" step="0.05" value="0.5" 
                    class="w-full transition duration-150">
         </div>
+        
         <div class="mb-4 flex items-center justify-between p-3 bg-gray-600 rounded-lg shadow-inner">
             <label for="timerToggle" class="text-sm font-semibold text-gray-100">Attiva Timer</label>
             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -412,6 +420,7 @@
     </div>
 
     <script>
+
         // ====================================================
         // VARIABILI GLOBALI E CONFIGURAZIONE METRONOMO
         // ====================================================
@@ -1128,7 +1137,6 @@
             if (!input) return;
 
             if (elementId === 'bpm') {
-
                 const min = parseInt(input.min) || 40;
                 const max = parseInt(input.max) || 300;
                 let newValue = initialBPM + step; 
@@ -1406,7 +1414,19 @@
                 }
             });
             
-            // PWA: Registra il service worker (omesso per brevità)
+            // ✅ PWA: Registra il service worker (ORA ATTIVO)
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    // La registrazione parte dalla radice, il service worker deve essere al livello superiore
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(registration => {
+                            console.log('Service Worker registrato con successo:', registration.scope);
+                        })
+                        .catch(error => {
+                            console.error('Registrazione Service Worker fallita:', error);
+                        });
+                });
+            }
         });
 
     </script>
